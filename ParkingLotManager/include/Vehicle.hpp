@@ -5,7 +5,7 @@
 #include <ctime>
 using namespace std;
 
-namespace ParkingLotManager
+namespace ParkingLotSystem
 {
     static const unsigned int NUMBER_OF_SECONDS_IN_ONE_HOUR = 3600;
     
@@ -18,8 +18,8 @@ namespace ParkingLotManager
             time_t ExitTime;
 
             virtual unsigned int PaymentCalculation() = 0;
+            virtual unsigned int GetPricePerHour() = 0;
             friend ostream& operator<<(ostream& outstream, const Vehicle& vehicle);
- 
     };
 
     ostream& operator<<(ostream& outstream, const Vehicle& vehicle) 

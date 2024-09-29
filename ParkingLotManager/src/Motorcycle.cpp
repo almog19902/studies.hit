@@ -1,6 +1,6 @@
 #include "../include/Vehicle.hpp"
 
-namespace ParkingLotManager
+namespace ParkingLotSystem
 {
     class Motorcycle : public Vehicle
     {
@@ -28,13 +28,18 @@ namespace ParkingLotManager
             {
                 if (EntryTime == 0 ||  ExitTime == 0 || EntryTime > ExitTime)
                 {
-                    cout << "Parking time is invalid; EntryTime = " << EntryTime
-                                       << ",  ExitTime = " << EntryTime << endl;
+                    cout << "Parking time is invalid; EntryTime = " << ctime(&EntryTime)
+                                       << ",  ExitTime = " << ctime(&EntryTime) << endl;
                 }
 
                 double parkingTimeElapsedInSeconds = difftime(ExitTime, EntryTime);
                 int parkingTimeElapsedInHours = (parkingTimeElapsedInSeconds / NUMBER_OF_SECONDS_IN_ONE_HOUR) + 1;
                 return parkingTimeElapsedInHours * PricePerHour;
+            }
+
+            unsigned int GetPricePerHour() override
+            {
+                return PricePerHour;
             }
     };
 }

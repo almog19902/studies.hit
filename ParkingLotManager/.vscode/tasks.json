@@ -3,10 +3,10 @@
         {
             "type": "cppbuild",
             "label": "C/C++: clang build active file",
-            "command": "/usr/bin/clang",
+            "command": "/opt/homebrew/bin/g++",
             "args": [
-                "-fcolor-diagnostics",
-                "-fansi-escape-codes",
+                // "-fcolor-diagnostics",
+                // "-fansi-escape-codes",
                 "-g",
                 "${file}",
                 "-o",

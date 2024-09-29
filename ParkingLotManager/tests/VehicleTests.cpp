@@ -3,7 +3,7 @@
 #include "../src/Motorcycle.cpp"
 #include "../src/Truck.cpp"
 
-using namespace ParkingLotManager;
+using namespace ParkingLotSystem;
 
 int main()
 {

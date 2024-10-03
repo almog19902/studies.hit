@@ -79,7 +79,16 @@ namespace ParkingLotSystem
             vehicle->EntryTime = entryTime;
             vehicle->ExitTime = 0;
 
-            ParkingSpacesVectors[vehicleType].push_back(vehicle);
+            if (ParkingSpacesVectors[vehicleType].size() >= dataMap[vehicleType])
+            {
+                cout << "You have reached the limit of the " << vehicleType << " that can park in the parking lot."
+                     << "A " << vehicle->VehicleType << " with license plate " << vehicle->LicensePlate 
+                     << "did not enter." << endl;
+            }
+            else
+            {
+                ParkingSpacesVectors[vehicleType].push_back(vehicle);
+            }
         }
 
         inFile.close();

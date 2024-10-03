@@ -1,7 +1,9 @@
 {
     "files.associations": {
-        "string": "cpp",
+        "ostream": "cpp",
         "iosfwd": "cpp",
+        "ctime": "cpp",
+        "iostream": "cpp",
         "__bit_reference": "cpp",
         "__bits": "cpp",
         "__config": "cpp",
@@ -29,13 +31,11 @@
         "cstdio": "cpp",
         "cstdlib": "cpp",
         "cstring": "cpp",
-        "ctime": "cpp",
         "cwchar": "cpp",
         "cwctype": "cpp",
         "exception": "cpp",
         "initializer_list": "cpp",
         "ios": "cpp",
-        "iostream": "cpp",
         "istream": "cpp",
         "limits": "cpp",
         "locale": "cpp",
@@ -43,11 +43,11 @@
         "mutex": "cpp",
         "new": "cpp",
         "optional": "cpp",
-        "ostream": "cpp",
         "ratio": "cpp",
         "sstream": "cpp",
         "stdexcept": "cpp",
         "streambuf": "cpp",
+        "string": "cpp",
         "string_view": "cpp",
         "system_error": "cpp",
         "tuple": "cpp",
@@ -62,10 +62,13 @@
         "compare": "cpp",
         "concepts": "cpp",
         "algorithm": "cpp",
-        "any": "cpp",
-        "deque": "cpp",
         "fstream": "cpp",
+        "deque": "cpp",
         "iomanip": "cpp",
-        "stack": "cpp"
-    }
+        "stack": "cpp",
+        "filesystem": "cpp",
+        "thread": "cpp",
+        "any": "cpp"
+    },
+    "C_Cpp.errorSquiggles": "disabled"
 }

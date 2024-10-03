@@ -1,39 +1,21 @@
-#include "../include/Vehicle.hpp"
+#include "../include/Vehicles.hpp"
 #include "../include/IParkingLotDataManager.hpp"
-#include "../src/ParkingLotDataManager.cpp"
+#include "../include/ParkingLotManager.hpp"
 #include <vector>
 
 using namespace std;
 
 namespace ParkingLotSystem
 {
-    class ParkingLotManager
-    {
-        private:
-            unordered_map<string, vector<Vehicle*>> ParkingSpacesVectors;
-            unordered_map<string, size_t> ParkingSpacesCapacities;
-            void AddVehicleType(const string& vehicleType, size_t capacity);
-            bool AddVehicle(Vehicle* vehicle);
-            bool removeVehicle(Vehicle* vehicle);
-
-        public:
-            ParkingLotManager(unordered_map<string, size_t> ParkingVehiclesAndCapacies);
-            void PrintParkingLotStatus();
-
-            bool VehicleEntry(Vehicle* vehicle);
-            ParkingLotManager& operator+(Vehicle* Vehicle);
-            bool VehicleExit(Vehicle* vehicle);
-            ParkingLotManager& operator-(Vehicle* Vehicle);
-    }; 
-
-    ParkingLotManager::ParkingLotManager(unordered_map<string, size_t> ParkingVehiclesAndCapacies)
+    ParkingLotManager::ParkingLotManager(IParkingLotDataManager* dataManager)
     {
         try
         {
             ParkingSpacesVectors = unordered_map<string, vector<Vehicle*>>();
             ParkingSpacesCapacities = unordered_map<string, size_t>();
+            this->dataManager = dataManager;
 
-            for (const auto& [type, capacity] : ParkingVehiclesAndCapacies) 
+            for (const auto& [type, capacity] : dataManager->GetDataMap()) 
             {
                 AddVehicleType(type, capacity);
             }
@@ -44,7 +26,7 @@ namespace ParkingLotSystem
         }
     }
 
-    void ParkingLotManager::PrintParkingLotStatus()
+    void ParkingLotManager::DisplayParkingLotStatus()
     {
         int numberOfVehicleInTheParkingLot = 0;
         int totalCurrentProfit = 0;
@@ -84,9 +66,26 @@ namespace ParkingLotSystem
         cout << "**************************************" << endl;
     }
 
-    bool ParkingLotManager::VehicleEntry(Vehicle* vehicle)
+    bool ParkingLotManager::SaveParkingLotState(const string& fileName)
     {
-        return AddVehicle(vehicle);
+        return (dataManager->SaveParkingLotState(ParkingSpacesVectors, fileName));
+    }
+
+    bool ParkingLotManager::LoadParkingLotState(const string& fileName)
+    {
+        auto tempVectorMap = dataManager->LoadParkingLotState(fileName);
+        if (tempVectorMap.empty())
+        {
+            return false;
+        }
+
+        ParkingSpacesVectors = tempVectorMap;
+        return true;
+    }
+
+    bool ParkingLotManager::VehicleEntry(Vehicle* Vehicle)
+    {
+        return AddVehicle(Vehicle);
     }
 
     ParkingLotManager& ParkingLotManager::operator+(Vehicle* Vehicle)
@@ -95,19 +94,20 @@ namespace ParkingLotSystem
         return *this;
     }
 
-    bool ParkingLotManager::VehicleExit(Vehicle* vehicle)
+    bool ParkingLotManager::VehicleExit(const string& licensePlate)
     {
-        
-        if (!removeVehicle(vehicle))
+        Vehicle* removedVehicle = RemoveVehicle(licensePlate);
+        if (removedVehicle == nullptr)
         {
-            cerr << vehicle->VehicleType << " with license plate "
-                 << vehicle->LicensePlate << " not found in the parking lot." << endl;
+            cerr << "Vehicle with license plate " << licensePlate
+                 << " not found in the parking lot." << endl;
+
             return false;
         }
         
-        time(&(vehicle->ExitTime));
+        time(&(removedVehicle->ExitTime));
         cout << "\n******************* Vehicle Exit *******************" << endl;
-        cout << *vehicle << "Pay : " << vehicle->PaymentCalculation() << endl;
+        cout << *removedVehicle << "Pay : " << removedVehicle->PaymentCalculation() << endl;
         cout << "**************************************" << endl;
 
         return true;
@@ -115,7 +115,7 @@ namespace ParkingLotSystem
 
     ParkingLotManager& ParkingLotManager::operator-(Vehicle* Vehicle)
     {
-        VehicleExit(Vehicle);
+        VehicleExit(Vehicle->LicensePlate);
         return *this;
     }
 
@@ -134,6 +134,20 @@ namespace ParkingLotSystem
             return false;
         }
 
+
+        for (auto& [type, vector] : ParkingSpacesVectors) 
+        {
+            for (auto iterator = vector.begin(); iterator != vector.end(); ++iterator)
+            {
+                if ((*iterator)->LicensePlate.compare(vehicle->LicensePlate) == 0)
+                {
+                    cerr << "Parking failed: " << (*iterator)->VehicleType << " with license plate "
+                         << vehicle->LicensePlate << " already parked in the parking lot." << endl;
+                    return false;
+                }
+            }
+        }
+
         if (ParkingSpacesVectors[vehicleType].size() < ParkingSpacesCapacities[vehicleType])
         {
             ParkingSpacesVectors[vehicleType].push_back(move(vehicle));
@@ -145,24 +159,21 @@ namespace ParkingLotSystem
         return false;
     }
 
-    bool ParkingLotManager::removeVehicle(Vehicle* vehicle) 
+    Vehicle* ParkingLotManager::RemoveVehicle(const string& licensePlate) 
     {
-        string vehicleType = vehicle->VehicleType;
-
-        if (ParkingSpacesVectors.find(vehicleType) != ParkingSpacesVectors.end())
+        for (auto& [type, vector] : ParkingSpacesVectors) 
         {
-            vector<Vehicle*>& vector = ParkingSpacesVectors[vehicleType];
-            
             for (auto iterator = vector.begin(); iterator != vector.end(); ++iterator)
             {
-                if ((*iterator)->LicensePlate.compare(vehicle->LicensePlate) == 0)
+                if ((*iterator)->LicensePlate.compare(licensePlate) == 0)
                 {
+                    Vehicle* removedVehicle = *iterator;
                     vector.erase(iterator);
-                    return true;
+                    return removedVehicle;
                 }
             }
         }
 
-        return false;
+        return nullptr;
     }
 }

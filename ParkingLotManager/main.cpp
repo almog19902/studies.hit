@@ -11,7 +11,7 @@
 
 using namespace ParkingLotSystem;
 
-void ParkVehicleInTheParkingLot(ParkingLotManager *parkingLotManager);
+void ParkVehicleInTheParkingLot(ParkingLotManager *parkingLotManager, unordered_map<string, size_t> dataMap);
 void ExitVehicleFromTheParkingLot(ParkingLotManager *parkingLotManager);
 void DisplayParkingLotStatus(ParkingLotManager *parkingLotManager);
 void SaveParkingLotStateToFile(ParkingLotManager *parkingLotManager);
@@ -60,7 +60,7 @@ int main()
             switch (userActionNumber)
             {
                 case 1:
-                    ParkVehicleInTheParkingLot(parkingLotManager);
+                    ParkVehicleInTheParkingLot(parkingLotManager, dataMap);
                     break;
 
                 case 2:
@@ -103,7 +103,7 @@ int main()
     }
 }
 
-void ParkVehicleInTheParkingLot(ParkingLotManager *parkingLotManager)
+void ParkVehicleInTheParkingLot(ParkingLotManager *parkingLotManager, unordered_map<string, size_t> dataMap)
 {
     string vehicleLicensePlate = "";
 
@@ -118,7 +118,13 @@ void ParkVehicleInTheParkingLot(ParkingLotManager *parkingLotManager)
 
     string vehicleType = "";
 
-    cout << "Enter vehicle type: Car, Motorcycle or Truck" << endl;
+    cout << "Enter vehicle type: ";
+    for (const auto& [vehicleType, capacity] : dataMap)
+    {
+         cout << vehicleType << " | ";
+    }
+    cout << endl;
+    
     cin >> vehicleType;
 
     Vehicle* vehicle = Utils::GetVehicleInstanceByVehicleType(vehicleType, vehicleLicensePlate);
@@ -129,7 +135,10 @@ void ParkVehicleInTheParkingLot(ParkingLotManager *parkingLotManager)
         return;
     }
 
-    parkingLotManager->VehicleEntry(vehicle);
+    if (!parkingLotManager->VehicleEntry(vehicle))
+    {
+        delete vehicle;
+    }
 }
 
 void ExitVehicleFromTheParkingLot(ParkingLotManager *parkingLotManager)

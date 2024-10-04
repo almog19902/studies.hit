@@ -26,7 +26,6 @@ namespace ParkingLotSystem
         }
     }
 
-
     ParkingLotManager::~ParkingLotManager()
     {
         ResetParkingLot();
@@ -149,6 +148,8 @@ namespace ParkingLotSystem
     bool ParkingLotManager::AddVehicle(Vehicle* vehicle)
     {
         const string& vehicleType = vehicle->GetVehicleType();
+        const string& licensePlate = vehicle->GetLicensePlate();
+
         if (ParkingSpacesVectors.find(vehicleType) == ParkingSpacesVectors.end())
         {
             cerr << "Unknown vehicle type: " << vehicleType << endl;
@@ -160,10 +161,10 @@ namespace ParkingLotSystem
         {
             for (auto iterator = vector.begin(); iterator != vector.end(); ++iterator)
             {
-                if ((*iterator)->GetLicensePlate().compare(vehicle->GetLicensePlate()) == 0)
+                if ((*iterator)->GetLicensePlate().compare(licensePlate) == 0)
                 {
                     cerr << "Parking failed: " << (*iterator)->GetVehicleType() << " with license plate "
-                         << vehicle->GetLicensePlate() << " already parked in the parking lot." << endl;
+                         << licensePlate << " already parked in the parking lot." << endl;
                     return false;
                 }
             }
@@ -172,7 +173,7 @@ namespace ParkingLotSystem
         if (ParkingSpacesVectors[vehicleType].size() < ParkingSpacesCapacities[vehicleType])
         {
             ParkingSpacesVectors[vehicleType].push_back(move(vehicle));
-            cout << vehicleType << " with license plate : " << vehicle->GetLicensePlate() << " parked." << endl;
+            cout << vehicleType << " with license plate : " << licensePlate << " parked." << endl;
             return true;
         }
 

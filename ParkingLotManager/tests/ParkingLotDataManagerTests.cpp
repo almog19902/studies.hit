@@ -42,8 +42,24 @@ int main()
     {
         unordered_map<string, vector<Vehicle*>> result = dataManager->LoadParkingLotState("ParkingLotDataManagerTests_stateSavedFile.txt");
         AreParkingSpacesVectorsEqual(*ParkingSpacesVectors, result);
+
+        for (auto& [type, vector] : result) 
+        {
+            for (Vehicle* vehicle : vector) 
+            {
+                delete vehicle;
+            }
+        }
     }
-    return 1;
+
+    delete car1;
+    delete car2;
+    delete bike1;
+    delete Truck1;
+    delete dataManager;
+    delete ParkingSpacesVectors;
+    
+    return 0;
 }
 
 void AreParkingSpacesVectorsEqual(const unordered_map<string, vector<Vehicle*>>& map1,

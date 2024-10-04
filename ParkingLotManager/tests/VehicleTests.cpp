@@ -12,25 +12,25 @@ int main()
     Motorcycle motorcycle("00-000-02");
     Truck truck("00-000-03");
 
-    time(&(car.ExitTime));
-    time(&(motorcycle.ExitTime));
-    time(&(truck.ExitTime));
+    car.SetExitTime(time(nullptr));
+    motorcycle.SetExitTime(time(nullptr));
+    truck.SetExitTime(time(nullptr));
 
-    int time_difference_seconds = 10 * 3600 + 32 * 60;
+    int time_difference_seconds = 10 * 3600 + 32 * 60; // 10 houres and 32 minets in seconds
 
-    car.ExitTime += time_difference_seconds;
+    car.SetExitTime(car.GetExitTime() + time_difference_seconds);
     
     cout << "car bill : " << car.PaymentCalculation() << endl;
 
     cout << "car: \n" << car << endl;
 
-    motorcycle.ExitTime += time_difference_seconds;
+    motorcycle.SetExitTime(motorcycle.GetExitTime() + time_difference_seconds);
     
     cout << "motorcycle bill : " << motorcycle.PaymentCalculation() << endl;
 
     cout << "motorcycle: \n" << motorcycle << endl;
 
-    truck.ExitTime += time_difference_seconds;
+    truck.SetExitTime(truck.GetExitTime() + time_difference_seconds);
     
     cout << "truck bill : " << truck.PaymentCalculation() << endl;
 

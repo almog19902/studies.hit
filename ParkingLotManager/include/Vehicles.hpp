@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <ctime>
+#include <string>
 
 using namespace std;
 
@@ -12,15 +13,29 @@ namespace ParkingLotSystem
     
     class Vehicle
     {
-        public:
+        private:
             string LicensePlate;
             string VehicleType;
             time_t EntryTime;
             time_t ExitTime;
 
+        public:
+            Vehicle(const string& licensePlate, const string& vehicleType);
             virtual ~Vehicle();
+
             virtual unsigned int PaymentCalculation() = 0;
             virtual unsigned int GetPricePerHour() = 0;
+
+            string GetLicensePlate() const;
+            string GetVehicleType() const;
+            time_t GetEntryTime() const;
+            time_t GetExitTime() const;
+            char *GetEntryTimeHumanReadable() const;
+            char *GetExitTimeHumanReadable() const;
+
+            void SetEntryTime(time_t time);
+            void SetExitTime(time_t time);
+
             friend ostream& operator<<(ostream& outstream, const Vehicle& vehicle);
             virtual bool operator==(const Vehicle& other) const;
     };
@@ -32,8 +47,8 @@ namespace ParkingLotSystem
 
         public:
             Car(string licensePlate);
-            Car(Car& other);
             ~Car() override;
+
             unsigned int PaymentCalculation() override;
             unsigned int GetPricePerHour() override;
     };
@@ -45,8 +60,8 @@ namespace ParkingLotSystem
 
         public:
             Motorcycle(string licensePlate);
-            Motorcycle(Motorcycle& other);
             ~Motorcycle() override;
+
             unsigned int PaymentCalculation() override;
             unsigned int GetPricePerHour() override;
     };
@@ -58,8 +73,8 @@ namespace ParkingLotSystem
 
         public:
             Truck(string licensePlate);
-            Truck(Truck& other);
             ~Truck() override;
+
             unsigned int PaymentCalculation() override;
             unsigned int GetPricePerHour() override;
     };

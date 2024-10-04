@@ -2,37 +2,27 @@
 
 namespace ParkingLotSystem
 {
-    Car::Car(string licensePlate)
+    Car::Car(string licensePlate) : Vehicle(licensePlate, "Car")
     {
-        this->LicensePlate = licensePlate;
-        this->VehicleType = "Car";
-        time(&this->EntryTime);
-        this->ExitTime = 0;
-    }
-
-    Car::Car(Car& other)
-    {
-        this->LicensePlate = other.LicensePlate;
-        this->VehicleType = other.VehicleType;
-        this->EntryTime = other.EntryTime;
-        this->ExitTime = other.ExitTime;
+        //use only base ctor
     }
 
     Car::~Car()
     {
-        // empty dtor
-    };
+        //empty detor
+    }
 
     unsigned int Car::PaymentCalculation()
     {
-        if (EntryTime == 0 ||  ExitTime == 0 || EntryTime > ExitTime)
+        if (GetEntryTime() == 0 ||  GetExitTime() == 0 || GetEntryTime() > GetExitTime())
         {
-            cout << "Parking time is invalid; EntryTime = " << ctime(&EntryTime)
-                                << ",  ExitTime = " << ctime(&EntryTime) << endl;
+            cout << "Parking time is invalid; EntryTime = " << GetEntryTimeHumanReadable()
+                                << ",  ExitTime = " << GetExitTimeHumanReadable() << endl;
         }
 
-        double parkingTimeElapsedInSeconds = difftime(ExitTime, EntryTime);
-        int parkingTimeElapsedInHours = (parkingTimeElapsedInSeconds / NUMBER_OF_SECONDS_IN_ONE_HOUR) + 1;
+        time_t parkingTimeElapsedInHours = (difftime(GetExitTime(), GetEntryTime()) /
+                                            NUMBER_OF_SECONDS_IN_ONE_HOUR) + 1;
+                                            
         return parkingTimeElapsedInHours * PricePerHour;
     }
     

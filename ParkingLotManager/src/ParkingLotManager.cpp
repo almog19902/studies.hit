@@ -26,6 +26,24 @@ namespace ParkingLotSystem
         }
     }
 
+
+    ParkingLotManager::~ParkingLotManager()
+    {
+        ResetParkingLot();
+    }
+
+    void ParkingLotManager::ResetParkingLot()
+    {
+        for (auto& [type, vector] : ParkingSpacesVectors) 
+        {
+            for (Vehicle* vehicle : vector) 
+            {
+                delete vehicle;
+                vehicle = nullptr;
+            }
+        }
+    }
+
     void ParkingLotManager::DisplayParkingLotStatus()
     {
         int numberOfVehicleInTheParkingLot = 0;
@@ -46,7 +64,7 @@ namespace ParkingLotSystem
 
             for (int i = 0; i < parkingSpacesVector.size() ; i++)
             {
-                currentVectorParkingTime += (difftime(currentTime, parkingSpacesVector[i]->EntryTime) /
+                currentVectorParkingTime += (difftime(currentTime, parkingSpacesVector[i]->GetEntryTime()) /
                                                                     NUMBER_OF_SECONDS_IN_ONE_HOUR) + 1;
                 cuurentVehiclePricePerHour = parkingSpacesVector[i]->GetPricePerHour();
             }
@@ -79,6 +97,7 @@ namespace ParkingLotSystem
             return false;
         }
 
+        ResetParkingLot();
         ParkingSpacesVectors = tempVectorMap;
         return true;
     }
@@ -105,17 +124,19 @@ namespace ParkingLotSystem
             return false;
         }
         
-        time(&(removedVehicle->ExitTime));
+        removedVehicle->SetExitTime(time(nullptr));
         cout << "\n******************* Vehicle Exit *******************" << endl;
         cout << *removedVehicle << "Pay : " << removedVehicle->PaymentCalculation() << endl;
         cout << "**************************************" << endl;
 
+        delete removedVehicle;
+        removedVehicle = nullptr;
         return true;
     }
 
     ParkingLotManager& ParkingLotManager::operator-(Vehicle* Vehicle)
     {
-        VehicleExit(Vehicle->LicensePlate);
+        VehicleExit(Vehicle->GetLicensePlate());
         return *this;
     }
 
@@ -127,7 +148,7 @@ namespace ParkingLotSystem
 
     bool ParkingLotManager::AddVehicle(Vehicle* vehicle)
     {
-        const string& vehicleType = vehicle->VehicleType;
+        const string& vehicleType = vehicle->GetVehicleType();
         if (ParkingSpacesVectors.find(vehicleType) == ParkingSpacesVectors.end())
         {
             cerr << "Unknown vehicle type: " << vehicleType << endl;
@@ -139,10 +160,10 @@ namespace ParkingLotSystem
         {
             for (auto iterator = vector.begin(); iterator != vector.end(); ++iterator)
             {
-                if ((*iterator)->LicensePlate.compare(vehicle->LicensePlate) == 0)
+                if ((*iterator)->GetLicensePlate().compare(vehicle->GetLicensePlate()) == 0)
                 {
-                    cerr << "Parking failed: " << (*iterator)->VehicleType << " with license plate "
-                         << vehicle->LicensePlate << " already parked in the parking lot." << endl;
+                    cerr << "Parking failed: " << (*iterator)->GetVehicleType() << " with license plate "
+                         << vehicle->GetLicensePlate() << " already parked in the parking lot." << endl;
                     return false;
                 }
             }
@@ -151,7 +172,7 @@ namespace ParkingLotSystem
         if (ParkingSpacesVectors[vehicleType].size() < ParkingSpacesCapacities[vehicleType])
         {
             ParkingSpacesVectors[vehicleType].push_back(move(vehicle));
-            cout << vehicleType << " with license plate : " << vehicle->LicensePlate << " parked." << endl;
+            cout << vehicleType << " with license plate : " << vehicle->GetLicensePlate() << " parked." << endl;
             return true;
         }
 
@@ -165,7 +186,7 @@ namespace ParkingLotSystem
         {
             for (auto iterator = vector.begin(); iterator != vector.end(); ++iterator)
             {
-                if ((*iterator)->LicensePlate.compare(licensePlate) == 0)
+                if ((*iterator)->GetLicensePlate().compare(licensePlate) == 0)
                 {
                     Vehicle* removedVehicle = *iterator;
                     vector.erase(iterator);

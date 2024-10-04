@@ -27,6 +27,7 @@ int main()
         if (dataMap.empty())
         {
             cerr << "dataFile empty the פarking not created properly." << endl;
+            delete parkingLotDataManager;
             return -1;
         }
 
@@ -89,6 +90,10 @@ int main()
         }
 
         cout << "Bye ;)" << endl;
+
+        delete parkingLotDataManager;
+        delete parkingLotManager;
+
         return 0;
     }
     catch(const runtime_error& rex)

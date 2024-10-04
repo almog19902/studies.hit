@@ -13,10 +13,10 @@ namespace ParkingLotSystem
     {
         public:
             virtual ~IParkingLotDataManager() = 0;
-            virtual bool SaveParkingLotState(unordered_map<string, vector<Vehicle*>> ParkingSpacesVectors,
-                                                                              const string& fileName) = 0;
+            virtual bool SaveParkingLotState(unordered_map<string, vector<Vehicle*>>& ParkingSpacesVectors,
+                                                                               const string& fileName) = 0;
             virtual unordered_map<string, vector<Vehicle*>> LoadParkingLotState(const string& fileString) = 0;
-            virtual unordered_map<string, size_t> GetDataMap() = 0;
+            virtual unordered_map<string, size_t>& GetDataMap() = 0;
     };
 
     IParkingLotDataManager::~IParkingLotDataManager()

@@ -36,23 +36,22 @@ int main()
 
         parkingLotManager->DisplayParkingLotStatus();
 
-        parkingLotManager->VehicleExit("XYZ789"); // car2
+        parkingLotManager->VehicleExit("XYZ789"); // car2 - delete in exit
 
         parkingLotManager->DisplayParkingLotStatus();
 
-        *parkingLotManager - bike1;
+        *parkingLotManager - bike1; //delete in exit
 
         parkingLotManager->DisplayParkingLotStatus();
 
-        delete car1;
-        delete car2;
-        delete bike1;
+        delete parkingLotDataManager;
+        delete parkingLotManager;
+
+        return 0;
     }
     catch(const runtime_error& rex)
     {
         cerr << rex.what() << '\n';
         return -1;
     }
-
-    return 0;
 }

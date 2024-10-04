@@ -18,12 +18,12 @@ namespace ParkingLotSystem
         }
     }
     
-    unordered_map<string, size_t> ParkingLotFilesDataManager::GetDataMap()
+    unordered_map<string, size_t>& ParkingLotFilesDataManager::GetDataMap()
     {
         return dataMap;
     }
 
-    bool ParkingLotFilesDataManager::SaveParkingLotState(unordered_map<string, vector<Vehicle*>> ParkingSpacesVectors,
+    bool ParkingLotFilesDataManager::SaveParkingLotState(unordered_map<string, vector<Vehicle*>>& ParkingSpacesVectors,
                                                                                                const string& fileName)
     {
         ofstream outFile(fileName);
@@ -39,8 +39,8 @@ namespace ParkingLotSystem
             for (const auto& vehicle : parkingSpaceVector)
             {
                 outFile << vehicleType << " " 
-                        << vehicle->LicensePlate << " " 
-                        << vehicle->EntryTime << "\n";
+                        << vehicle->GetLicensePlate() << " " 
+                        << vehicle->GetEntryTime() << "\n";
             }
         }
 
@@ -66,27 +66,26 @@ namespace ParkingLotSystem
 
         while (inFile >> vehicleType >> licensePlate >> entryTime)
         {
-            Vehicle* vehicle = Utils::GetVehicleInstanceByVehicleType(vehicleType, licensePlate);
-            
-            if(vehicle == nullptr)
-            {
-                cerr << "Cant load vehicle with license plate " << licensePlate << "from file.\n"
-                     << "vehicle type " << vehicleType << "is invalid." << endl;
-                     continue;
-            }
-
-            vehicle->VehicleType = vehicleType;
-            vehicle->EntryTime = entryTime;
-            vehicle->ExitTime = 0;
-
             if (ParkingSpacesVectors[vehicleType].size() >= dataMap[vehicleType])
             {
                 cout << "You have reached the limit of the " << vehicleType << " that can park in the parking lot."
-                     << "A " << vehicle->VehicleType << " with license plate " << vehicle->LicensePlate 
+                     << "A " << vehicleType << " with license plate " << licensePlate
                      << "did not enter." << endl;
             }
             else
             {
+                Vehicle* vehicle = Utils::GetVehicleInstanceByVehicleType(vehicleType, licensePlate);
+                
+                if(vehicle == nullptr)
+                {
+                    cerr << "Cant load vehicle with license plate " << licensePlate << "from file.\n"
+                        << "vehicle type " << vehicleType << "is invalid." << endl;
+                        continue;
+                }
+
+                vehicle->SetEntryTime(entryTime);
+                vehicle->SetExitTime(0);
+
                 ParkingSpacesVectors[vehicleType].push_back(vehicle);
             }
         }

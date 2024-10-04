@@ -18,11 +18,12 @@ namespace ParkingLotSystem
 
         public:
             ParkingLotFilesDataManager(const string& filePath);
-            bool SaveParkingLotState(unordered_map<string, vector<Vehicle*>> ParkingSpacesVectors,
+            ~ParkingLotFilesDataManager() override;
+
+            bool SaveParkingLotState(unordered_map<string, vector<Vehicle*>>& ParkingSpacesVectors,
                                                                  const string& fileName) override;
             unordered_map<string, vector<Vehicle*>> LoadParkingLotState(const string& fileString) override;
-            unordered_map<string, size_t> GetDataMap() override;
-            ~ParkingLotFilesDataManager() override;
+            unordered_map<string, size_t>& GetDataMap() override;
     };
 }
 #endif // PARKING_LOT_FILE_DATA_MANAGER_H

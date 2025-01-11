@@ -1,0 +1,50 @@
+## Ignore build output directories
+bin/
+obj/
+
+## User-specific files
+.idea/
+.vs/
+.vscode/
+*.user
+*.userosscache
+*.suo
+*.swp
+*~.ncb
+*.aps
+*.log
+
+## .NET Core and .NET 5/6/7/8 specific
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+## Windows Installer files
+*.cab
+*.msi
+*.msm
+*.msp
+
+## Windows Installer files
+Thumbs.db
+Desktop.ini
+
+## JetBrains Rider
+.idea/
+
+## Visual Studio for Mac
+.vscode/
+
+## User-specific files for Visual Studio Code
+.vscode/
+
+## Ignore dependency directories for NuGet
+.nuget/
+packages/
+
+## Ignore built files from running dotnet publish
+publish/
+
+## Ignore local settings
+appsettings.Development.json
+appsettings.Local.json

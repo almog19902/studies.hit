@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using System.Net.Sockets;
+using System.Net;
 
 namespace ChatClient
 {
@@ -6,12 +7,10 @@ namespace ChatClient
     {
         static void Main(string[] args)
         {
-            var configuration = new ConfigurationBuilder()
-               .SetBasePath(AppDomain.CurrentDomain.BaseDirectory) 
-               .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)  
-               .Build();
-
-
+            Console.WriteLine("client start");
+            Client client = new Client();
+            client.ConnectToServer();
+            client.StartChating();
         }
     }
 }

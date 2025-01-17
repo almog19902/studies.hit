@@ -15,7 +15,7 @@ namespace ChatClient
         public Client() 
         {
             _details = null;
-            _host = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 5740);
+            _host = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 5740); //define
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         }
 
@@ -56,10 +56,9 @@ namespace ChatClient
                 else
                 {
                     _socket.Send(Encoding.UTF8.GetBytes(currentMessage));
-                    Console.WriteLine($"Send message : {currentMessage}");
+                    Console.WriteLine($"{_details._username} : {currentMessage}");
                 }
-
-                Console.WriteLine("Enter message (write exit for exit):");
+                Console.Write($"{_details._username}:");
                 currentMessage = Console.ReadLine();
             }
         }

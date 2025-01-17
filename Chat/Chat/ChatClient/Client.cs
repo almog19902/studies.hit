@@ -1,102 +1,121 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Text.Json;
 
 namespace ChatClient
 {
     public class Client
     {
-        private ClientDetails? _details;
         private IPEndPoint _host;
         private Socket _socket;
+        private string _name;
 
-        public Client() 
+        private const int _hostPort = 5740;
+        private const string _hostIp = "127.0.0.1";
+
+        public Client()
         {
-            _details = null;
-            _host = new IPEndPoint(IPAddress.Parse("127.0.0.1"), 5740); //define
+            _host = new IPEndPoint(IPAddress.Parse(_hostIp), _hostPort); //define
             _socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            _name = string.Empty;
         }
 
-        public void ConnectToServer()
+        public void Start()
         {
             try
             {
-                CreateClientDetailsFromUserInput();
+                byte[] buffer = new byte[1024];
+
+                Console.WriteLine("welcome to chat service");
+                GetClientNameFromUser();
+
                 _socket.Connect(_host);
-                Console.WriteLine($"Connect to server in {_host.Address}:{_host.Port}");
 
-                string detailsAsJson = JsonSerializer.Serialize(_details);
-                byte[] detailsInBytes = Encoding.UTF8.GetBytes(detailsAsJson);
+                SendMessageToServer(_name);
 
-                _socket.Send(detailsInBytes);
-                Console.WriteLine($"Send Connect message to server");
+                while (GetMessageFromServer(buffer) == "Name already taken.")
+                {
+                    GetClientNameFromUser();
+                    SendMessageToServer(_name);
+                }
 
-                Task.Run(ListenToServerMessages);
+                StartListenerThreadToServerMessages();
+
+                StartChating();
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Failed to connect to server\n {ex.Message}");
+                Console.WriteLine($"Connection error: \n {ex.Message}");
                 _socket.Close();
             }
         }
 
-        public void StartChating()
+        private void SendMessageToServer(string message)
         {
-            Console.WriteLine("Enter message (write exit for exit):");
+            if (string.IsNullOrEmpty(message))
+            {
+                Console.WriteLine("Cant send empty message...");
+            }
+
+            _socket.Send(Encoding.UTF8.GetBytes(message));
+        }
+
+        private string GetMessageFromServer(byte[] buffer)
+        {
+            int receivedBytes = _socket.Receive(buffer);
+            string response = Encoding.UTF8.GetString(buffer, 0, receivedBytes).Trim();
+            Console.WriteLine(response);
+
+            return response;
+        }
+
+        private void StartListenerThreadToServerMessages()
+        {
+            Thread receiveThread = new Thread(() => ReceiveMessages(_socket));
+            receiveThread.Start();
+        }
+
+        private void StartChating()
+        {
+            Console.WriteLine("Enter messages (write exit for exit):");
             string currentMessage = Console.ReadLine();
 
-            while(currentMessage != "exit")
+            while (currentMessage != "exit")
             {
-                if (string.IsNullOrEmpty(currentMessage))
-                {
-                    Console.WriteLine("Cant send empty message...");
-                }
-                else
-                {
-                    _socket.Send(Encoding.UTF8.GetBytes(currentMessage));
-                    Console.WriteLine($"{_details._username} : {currentMessage}");
-                }
-                Console.Write($"{_details._username}:");
+                SendMessageToServer(currentMessage);
                 currentMessage = Console.ReadLine();
             }
         }
 
-        private Task ListenToServerMessages()
+        private void GetClientNameFromUser()
         {
-            byte[] buffer = new byte[1024];
-
-            while (true)
+            Console.WriteLine("Enter your name:");
+            _name = Console.ReadLine();
+            while (string.IsNullOrEmpty(_name))
             {
-                _socket.Receive(buffer);
-                Console.WriteLine(Encoding.UTF8.GetString(buffer));
+                Console.WriteLine("Invalid name, please enter your name again:");
+                _name = Console.ReadLine();
             }
         }
 
-        private void CreateClientDetailsFromUserInput()
+        private void ReceiveMessages(Socket clientSocket)
         {
-            _details = new ClientDetails();
-            Console.WriteLine("welcome to chat service");
-            Console.WriteLine("Enter user name:");
-            _details._username = Console.ReadLine();
-            while (string.IsNullOrEmpty(_details._username))
+            try
             {
-                Console.WriteLine("Incorrect user name, please enter user name again:");
-                _details._username = Console.ReadLine();
+                byte[] buffer = new byte[1024];
+                while (true)
+                {
+                    GetMessageFromServer(buffer);
+                }
             }
-
-            Console.WriteLine("Enter user name to chat with:");
-            _details._reqUserToChatWith = Console.ReadLine();
-            while (string.IsNullOrEmpty(_details._reqUserToChatWith))
+            catch (SocketException)
             {
-                Console.WriteLine("Incorrect user name, please enter user name again:");
-                _details._reqUserToChatWith = Console.ReadLine();
+                Console.WriteLine("Disconnected from server.");
             }
-
-            _details._ipAddress = null;
-            _details._port = 0;
-            _details._socket = null;
+            finally
+            {
+                clientSocket.Close();
+            }
         }
     }
 }
